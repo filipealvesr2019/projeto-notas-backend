@@ -87,6 +87,31 @@ app.post("/criar-usuario", async (req, res) => {
   }
 });
 
+app.post(`/login`, async (req, res) => {
+  const {email, senha } = req.body;
+
+  try{
+    // procura o usuario no banco de dados
+    const usuario = await Usuario.findOne({email});
+    if(!usuario){
+      return res.status(404).json({error: "Usuario não encontrado!"})
+    }
+    
+    // comparar com senhas
+    const senhaValida = await bcrypt.compare(senha, usuario.senha);
+    if(!senhaValida){
+      return res.status(401).json({error: "senha invalida"})
+    }
+
+    res.json({message: "Login bem sucedido"})
+
+  }catch(error){
+    console.log(error)
+  }
+
+
+})
+
 
 app.use((req, res) => {
   res.status(404).send("Página não encontrada!");
