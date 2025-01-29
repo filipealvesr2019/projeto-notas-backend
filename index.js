@@ -4,8 +4,29 @@ const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const Usuario = require('./models/Usuario')
+const jwt = require('jsonwebtoken')
 
 app.use(express.json());
+
+const SECRET = process.env.JWTtoken
+
+const autenticado = (req, res, next) => {
+  const token = req.headers['authorization'];
+
+  if(!token){
+    return res.status(401).send({error: 'Acesso negado. token não fornecido.'})
+  }
+
+  try{
+    const payload = jwt.verify(token, SECRET);
+    req.usuario = payload;
+    next()
+
+  }catch(error){
+    res.stutus(401).json({error: 'Token invalido ou expirado'})
+  }
+}
+
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
@@ -33,9 +54,10 @@ const protegerRota = (req, res, next) => {
     res.status(403).send("Acesso negado token invalido!");
   }
 };
-app.get("/rota-protegida", protegerRota, (req, res) => {
-  res.send("Voce acessou uma rota protegida");
+app.get("/rota-protegida", autenticado, (req, res) => {
+  res.json({mesage: `Bem vindo usuario com ID: ${req.usuario.id}`})
 });
+
 
 const logProdutoMiddleware = (req, res, next) => {
   console.log("Produto foi acessado....");
@@ -103,7 +125,9 @@ app.post(`/login`, async (req, res) => {
       return res.status(401).json({error: "senha invalida"})
     }
 
-    res.json({message: "Login bem sucedido"})
+    // cria token 
+    const token = jwt.sign({id: usuario._id, email: usuario.email}, SECRET, {expiresIn: '1h'})
+    res.json({message: "Login bem sucedido", token})
 
   }catch(error){
     console.log(error)
