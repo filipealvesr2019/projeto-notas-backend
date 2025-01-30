@@ -27,6 +27,16 @@ const autenticado = (req, res, next) => {
   }
 }
 
+const verficarPermissao = (permissao) => {
+  return (req, res, next) => {
+    if(!permissao.includes(req.usuario.role)){
+      return res.status(403).json({erro: 'Acesso negado. Permissão insuficiente.'})
+    }
+    next()
+  }
+  
+}
+
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
@@ -126,7 +136,7 @@ app.post(`/login`, async (req, res) => {
     }
 
     // cria token 
-    const token = jwt.sign({id: usuario._id, email: usuario.email}, SECRET, {expiresIn: '1h'})
+    const token = jwt.sign({id: usuario._id, email: usuario.email, role: usuario.role}, SECRET, {expiresIn: '1h'})
     res.json({message: "Login bem sucedido", token})
 
   }catch(error){
@@ -135,6 +145,7 @@ app.post(`/login`, async (req, res) => {
 
 
 })
+
 
 
 app.use((req, res) => {
