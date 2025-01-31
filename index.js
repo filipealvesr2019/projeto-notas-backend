@@ -97,7 +97,7 @@ app.post("/adicionar-produto", (req, res) => {
 });
 
 app.post("/criar-usuario", async (req, res) => {
-  const { nome, email, senha } = req.body;
+  const { nome, email, senha, role } = req.body;
 
   try {
    // gera o salt
@@ -109,6 +109,7 @@ app.post("/criar-usuario", async (req, res) => {
       nome,
       email,
       senha: senhaHash,
+      role: role
     });
 
     await novoUsuario.save();
@@ -146,7 +147,15 @@ app.post(`/login`, async (req, res) => {
 
 })
 
+// apenas admin podem acessar
+app.get('/admin', autenticado, verficarPermissao(['admin']), (req, res, next) => {
+  res.json({ message: 'Bem vindo, admin'})
+})
 
+// ambos admin e usuarios pode acessar
+app.get('/perfil', autenticado, verficarPermissao(['user', 'admin']), (req, res) => {
+  res.json({message: 'bem vindo ao ser perfil' + req.usuario.email})
+})
 
 app.use((req, res) => {
   res.status(404).send("Página não encontrada!");
