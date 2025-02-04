@@ -147,6 +147,23 @@ app.post(`/login`, async (req, res) => {
 
 })
 
+app.put('/usuarios/:id/role', autenticado, verficarPermissao(['admin']), async (req,  res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  try{
+
+    const usuario = await Usuario.findByIdAndUpdate(id, { role },  {new: true});
+    if(!usuario){
+      res.status(404).json({error: "Usuario não encontrado"});
+    }
+
+    res.json({ message: "Papel atualizado com sucesso!", usuario})
+  }catch(error){
+    console.log(error)
+  }
+})
+
 // apenas admin podem acessar
 app.get('/admin', autenticado, verficarPermissao(['admin']), (req, res, next) => {
   res.json({ message: 'Bem vindo, admin'})
