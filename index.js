@@ -5,8 +5,15 @@ const mongoose = require("mongoose");
 require("dotenv").config();
 const Usuario = require('./models/Usuario')
 const jwt = require('jsonwebtoken')
+const rateLimit = require('express-rate-limit')
 
+const limiter = rateLimit({
+  webkitURL: 15 * 60 * 1000, // 15 minutos
+  max: 100,
+  message: 'Muitas requisições. Tente novamente mais tarde.'
+});
 app.use(express.json());
+app.use(limiter)
 
 const SECRET = process.env.JWTtoken
 
