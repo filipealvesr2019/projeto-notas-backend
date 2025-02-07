@@ -6,15 +6,28 @@ require("dotenv").config();
 const Usuario = require('./models/Usuario')
 const jwt = require('jsonwebtoken')
 const rateLimit = require('express-rate-limit')
+const helmet = require('helmet')
+const cors = require('cors');
+
+// const corsOptions = {
+//   origin: ['https://meusite.com.br'],
+//   method: 'GET,POST,PUT,DELETE',
+//   allowedHeaders: 'Content-type,Authorization'
+
+// }
+
+// app.use(cors(corsOptions));
 
 const limiter = rateLimit({
-  webkitURL: 15 * 60 * 1000, // 15 minutos
+  windowMs: 15 * 60 * 1000, // 15 minutos
   max: 100,
   message: 'Muitas requisições. Tente novamente mais tarde.'
 });
-app.use(express.json());
-app.use(limiter)
 
+
+app.use(helmet());
+app.use(limiter);
+app.use(express.json());
 const SECRET = process.env.JWTtoken
 
 const autenticado = (req, res, next) => {
