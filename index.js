@@ -8,6 +8,8 @@ const jwt = require('jsonwebtoken')
 const rateLimit = require('express-rate-limit')
 const helmet = require('helmet')
 const cors = require('cors');
+const lusca = require('lusca');
+const session = require('express-session');
 
 // const corsOptions = {
 //   origin: ['https://meusite.com.br'],
@@ -24,10 +26,24 @@ const limiter = rateLimit({
   message: 'Muitas requisições. Tente novamente mais tarde.'
 });
 
+app.use(session({
+  secret: 'seuSegredoSuperSecreto',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Defina como `true` se estiver usando HTTPS
+}));
+
+app.use(require('cookie-parser')()); // Lusca precisa do cookie-parser
+
+app.use(require('cookie-parser')()); // Lusca precisa do cookie-parser
+app.use(lusca.csrf());
 
 app.use(helmet());
 app.use(limiter);
 app.use(express.json());
+app.get('/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken });
+})
 const SECRET = process.env.JWTtoken
 
 const autenticado = (req, res, next) => {
