@@ -1,0 +1,34 @@
+
+const express = require('express');
+const User = require('../models/User');
+const router = express.Router();
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs')
+
+
+router.post(`/login`, async (req, res) => {
+    const {email, senha } = req.body;
+  
+    try{
+      // procura o usuario no banco de dados
+      const usuario = await User.findOne({email});
+      if(!usuario){
+        return res.status(404).json({error: "Usuario não encontrado!"})
+      }
+      
+      // comparar com senhas
+      const senhaValida = await bcrypt.compare(senha, usuario.senha);
+      if(!senhaValida){
+        return res.status(401).json({error: "senha invalida"})
+      }
+  
+      // cria token 
+      const token = jwt.sign({id: usuario._id, email: usuario.email, role: usuario.role}, SECRET, {expiresIn: '1h'})
+      res.json({message: "Login bem sucedido", token})
+  
+    }catch(error){
+      console.log(error)
+    }
+  
+  
+  })
