@@ -4,8 +4,31 @@ const User = require('../models/User');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs')
+const { body, validationResult} = require('express-validator')
+// rota de registro de usuario
+router.post('register', [
+  body('nome').trim().escape(),
+  bodd('email').isEmail().normalize(),
+  body('senha').isLength({ min: 6})
+], async (req, res) => {
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+    return res.status(400).json({errors: errors.array() })
+  }
+  const {nome, email, senha} =  req.body;
 
+  try{
+    const hashedSenha = bcrypt(senha, 10);
+    const novoUsuario = new User({nome, email, senha: hashedSenha});
+    await novoUsuario.save();
 
+    res.status(200).json({ message: 'Usuario registrado com sucesso!'})
+
+  }catch(error){
+    console.log(error)
+  }
+})
+// rota de login
 router.post(`/login`, async (req, res) => {
     const {email, senha } = req.body;
   
