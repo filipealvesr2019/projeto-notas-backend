@@ -210,6 +210,10 @@ app.get('/perfil', autenticado, verficarPermissao(['user', 'admin']), (req, res)
   res.json({message: 'bem vindo ao ser perfil' + req.usuario.email})
 })
 
+
+app.use("/api/users", require('./routes/Users'));
+app.use("/api/notas", require('./routes/Notas'));
+
 app.use((req, res) => {
   res.status(404).send("Página não encontrada!");
 });

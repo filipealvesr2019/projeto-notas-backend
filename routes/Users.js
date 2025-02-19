@@ -8,7 +8,7 @@ const { body, validationResult} = require('express-validator')
 // rota de registro de usuario
 router.post('register', [
   body('nome').trim().escape(),
-  bodd('email').isEmail().normalize(),
+  body('email').isEmail().normalizeEmail(),
   body('senha').isLength({ min: 6})
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -55,3 +55,5 @@ router.post(`/login`, async (req, res) => {
   
   
   })
+
+  module.exports = router
