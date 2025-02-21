@@ -4,11 +4,13 @@ const sanitizeHtml = require("sanitize-html");
 const AuthMiddleware = require("../middleware/AuthMiddleware");
 const Notas = require("../models/Notas");
 const router = express.Router();
+const lusca = require('lusca');
 
 // criar nota
 router.post(
   "/",
   AuthMiddleware,
+  lusca.csrf(),
   [
     body("titulo").trim().escape(),
     body("conteudo").customSanitizer((value) => sanitizeHtml(value)),
@@ -28,7 +30,7 @@ router.post(
   }
 );
 
-router.get('/', AuthMiddleware, async (req, res) => {
+router.get('/', AuthMiddleware,lusca.csrf(),  async (req, res) => {
     const notas = await Notas.find({ userID: req.user.id});
     res.json(notas)
 })

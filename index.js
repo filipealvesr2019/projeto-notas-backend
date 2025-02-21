@@ -42,7 +42,7 @@ app.use(helmet());
 app.use(limiter);
 app.use(express.json());
 app.get('/csrf-token', (req, res) => {
-  res.json({ csrfToken: req.csrfToken });
+  res.json({ csrfToken: req.csrfToken() });
 })
 const SECRET = process.env.JWTtoken
 
