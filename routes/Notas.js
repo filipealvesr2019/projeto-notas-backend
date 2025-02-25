@@ -9,8 +9,8 @@ const lusca = require('lusca');
 // criar nota
 router.post(
   "/",
-  AuthMiddleware,
   lusca.csrf(),
+  AuthMiddleware,
   [
     body("titulo").trim().escape(),
     body("conteudo").customSanitizer((value) => sanitizeHtml(value)),
@@ -30,7 +30,7 @@ router.post(
   }
 );
 
-router.get('/', AuthMiddleware,lusca.csrf(),  async (req, res) => {
+router.get('/', AuthMiddleware, lusca.csrf(),  async (req, res) => {
     const notas = await Notas.find({ userID: req.user.id});
     res.json(notas)
 })
