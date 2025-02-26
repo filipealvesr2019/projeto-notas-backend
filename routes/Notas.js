@@ -9,8 +9,8 @@ const lusca = require('lusca');
 // criar nota
 router.post(
   "/",
-  lusca.csrf(),
-  AuthMiddleware,
+ 
+
   [
     body("titulo").trim().escape(),
     body("conteudo").customSanitizer((value) => sanitizeHtml(value)),
