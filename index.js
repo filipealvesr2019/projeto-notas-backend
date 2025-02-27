@@ -10,7 +10,27 @@ const helmet = require('helmet')
 const cors = require('cors');
 const lusca = require('lusca');
 const session = require('express-session');
+const cookieParser = require("cookie-parser");
 
+app.use(cookieParser());
+
+// Configuração da sessão (OBRIGATÓRIA para `lusca`)
+app.use(session({
+  secret: 'seuSegredoSuperSecreto',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Se estiver rodando HTTPS, mude para true
+}));
+
+// Middleware de segurança LUSCA (tem que vir depois da sessão!)
+app.use(lusca({
+  csrf: true
+}));
+
+// Rota para pegar o token CSRF
+app.get('/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 // const corsOptions = {
 //   origin: ['https://meusite.com.br'],
 //   method: 'GET,POST,PUT,DELETE',
@@ -26,24 +46,12 @@ const limiter = rateLimit({
   message: 'Muitas requisições. Tente novamente mais tarde.'
 });
 
-app.use(session({
-  secret: 'seuSegredoSuperSecreto',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false } // Defina como `true` se estiver usando HTTPS
-}));
-
-app.use(require('cookie-parser')()); // Lusca precisa do cookie-parser
-
-app.use(require('cookie-parser')()); // Lusca precisa do cookie-parser
 
 
 app.use(helmet());
 app.use(limiter);
 app.use(express.json());
-app.get('/csrf-token', (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-})
+
 const SECRET = process.env.JWTtoken
 
 const autenticado = (req, res, next) => {
