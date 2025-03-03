@@ -9,7 +9,7 @@ const lusca = require('lusca');
 // rota de registro de usuario
 router.post(
   "/register",
-    lusca.csrf(),
+    // lusca.csrf(),
   [
     body("nome").trim().escape(),
     body("email").isEmail().normalizeEmail(),

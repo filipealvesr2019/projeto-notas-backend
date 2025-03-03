@@ -22,7 +22,7 @@ router.post(
     }
     const { titulo, conteudo } = req.body;
     try {
-      const novaNota = new Notas({ titulo, conteudo, userID: req.user.id });
+      const novaNota = new Notas({ titulo, conteudo});
       await novaNota.save();
     } catch (error) {
       console.log(error);
@@ -30,7 +30,7 @@ router.post(
   }
 );
 
-router.get('/', AuthMiddleware, lusca.csrf(),  async (req, res) => {
+router.get('/',   async (req, res) => {
     const notas = await Notas.find({ userID: req.user.id});
     res.json(notas)
 })
