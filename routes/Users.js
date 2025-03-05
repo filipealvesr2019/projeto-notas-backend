@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
 const lusca = require('lusca');
 
+const tokenSecret =  process.env.JWT_SECRET
 // rota de registro de usuario
 router.post(
   "/register",
@@ -53,7 +54,7 @@ router.post(`/login`, async (req, res) => {
     // cria token
     const token = jwt.sign(
       { id: usuario._id, email: usuario.email, role: usuario.role },
-      SECRET,
+      tokenSecret,
       { expiresIn: "1h" }
     );
     res.json({ message: "Login bem sucedido", token });
