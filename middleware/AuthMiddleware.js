@@ -1,11 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
-    const token = req.header('Autorization');
+    const token = req.header('Authorization');
     if(!token) return res.status(401).json({error: 'acesso negado!'});
     
     try{
-        const decoded = jwt.verify(token. process.env.JWTtoken);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         req.user = decoded;
         next();
     }catch(error){
