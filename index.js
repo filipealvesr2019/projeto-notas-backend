@@ -221,7 +221,7 @@ app.get('/perfil', autenticado, verficarPermissao(['user', 'admin']), (req, res)
 
 app.use("/api/users", require('./routes/Users'));
 app.use("/api/notas", require('./routes/Notas'));
-app.use("/api/", require('./routes/uploads'))
+app.use("/api", require('./routes/uploads'))
 app.use(lusca.csrf());
 app.use((req, res) => {
   res.status(404).send("Página não encontrada!");
