@@ -1,9 +1,9 @@
 const express = require('express');
-const uploadMiddleware = require('../middleware/uploadMiddleware');
+const upload = require('../middleware/uploadMiddleware');
 const router = express.Router();
 
 // upload arquivos com autenticação
-router.post('/upload', uploadMiddleware, upload.single('arquivo'), (req, res) => {
+router.post('/upload', upload.single('arquivo'), (req, res) => {
     if(!req.file){
         return res.status(400).json({ error: 'Nenhum arquivo enviado!'})
     }
