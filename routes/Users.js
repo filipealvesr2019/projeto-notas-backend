@@ -5,12 +5,14 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { body, validationResult } = require("express-validator");
 const lusca = require('lusca');
+const rateLimitMiddleware = require("../middleware/rateLimitMiddleware");
 
 const tokenSecret =  process.env.JWT_SECRET
 // rota de registro de usuario
 router.post(
   "/register",
     // lusca.csrf(),
+    rateLimitMiddleware,
   [
     body("nome").trim().escape(),
     body("email").isEmail().normalizeEmail(),
@@ -35,7 +37,7 @@ router.post(
   }
 );
 // rota de login
-router.post(`/login`, async (req, res) => {
+router.post(`/login`,rateLimitMiddleware,  async (req, res) => {
   const { email, senha } = req.body;
 
   try {

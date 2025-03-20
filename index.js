@@ -40,16 +40,16 @@ const cookieParser = require("cookie-parser");
 
 // app.use(cors(corsOptions));
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100,
-  message: 'Muitas requisições. Tente novamente mais tarde.'
-});
+// const limiter = rateLimit({
+//   windowMs: 15 * 60 * 1000, // 15 minutos
+//   max: 100,
+//   message: 'Muitas requisições. Tente novamente mais tarde.'
+// });
 
 
 
 app.use(helmet());
-app.use(limiter);
+// app.use(limiter);
 app.use(express.json());
 
 const SECRET = process.env.JWTtoken
@@ -224,10 +224,10 @@ app.use("/api/notas", require('./routes/Notas'));
 app.use("/api", require('./routes/uploads'))
 // app.use(lusca.csrf());
 
-app.use(limiter)
-app.get("/mensagem", (req, res) => {
-  res.send("essa e a sua mensagem de teste!")
-})
+// app.use(limiter)
+// app.get("/mensagem", (req, res) => {
+//   res.send("essa e a sua mensagem de teste!")
+// })
 
 app.use((req, res) => {
   res.status(404).send("Página não encontrada!");
