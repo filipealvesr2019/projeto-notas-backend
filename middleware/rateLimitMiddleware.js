@@ -5,8 +5,9 @@ const ratelimit = require('express-rate-limit');
 const rateLimitMiddleware = ratelimit({
     window: 15 * 60 * 1000, // 15 minutos
     max: 100,
-    message: {error: "Muitas requisições, tente novamente mais tarde."}
-
+    message: {error: "Muitas requisições, tente novamente mais tarde."},
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
 module.exports = rateLimitMiddleware
