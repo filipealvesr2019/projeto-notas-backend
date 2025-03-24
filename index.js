@@ -228,7 +228,9 @@ app.use("/api", require('./routes/uploads'))
 // app.get("/mensagem", (req, res) => {
 //   res.send("essa e a sua mensagem de teste!")
 // })
-
+app.get('/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
 app.use((req, res) => {
   res.status(404).send("Página não encontrada!");
 });
