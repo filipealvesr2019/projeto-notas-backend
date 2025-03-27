@@ -12,20 +12,20 @@ const lusca = require('lusca');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
 
-// app.use(cookieParser());
+app.use(cookieParser());
 
-// // Configuração da sessão (OBRIGATÓRIA para `lusca`)
-// app.use(session({
-//   secret: 'seuSegredoSuperSecreto',
-//   resave: false,
-//   saveUninitialized: true,
-//   cookie: { secure: false } // Se estiver rodando HTTPS, mude para true
-// }));
+// Configuração da sessão (OBRIGATÓRIA para `lusca`)
+app.use(session({
+  secret: 'seuSegredoSuperSecreto',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Se estiver rodando HTTPS, mude para true
+}));
 
-// // Middleware de segurança LUSCA (tem que vir depois da sessão!)
-// app.use(lusca({
-//   csrf: true
-// }));
+// Middleware de segurança LUSCA (tem que vir depois da sessão!)
+app.use(lusca({
+  csrf: true
+}));
 
 // // Rota para pegar o token CSRF
 // app.get('/csrf-token', (req, res) => {
