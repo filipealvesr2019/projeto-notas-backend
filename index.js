@@ -26,19 +26,19 @@ app.use(session({
 app.use(lusca({
   csrf: true
 }));
+const corsOptions = {
+  origin: ['http://localhost:3000'],
+  method: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-type,Authorization'
+
+}
+
+app.use(cors(corsOptions));
 
 // // Rota para pegar o token CSRF
 // app.get('/csrf-token', (req, res) => {
 //   res.json({ csrfToken: req.csrfToken() });
 // });
-// const corsOptions = {
-//   origin: ['https://meusite.com.br'],
-//   method: 'GET,POST,PUT,DELETE',
-//   allowedHeaders: 'Content-type,Authorization'
-
-// }
-
-// app.use(cors(corsOptions));
 
 // const limiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutos
