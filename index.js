@@ -27,9 +27,9 @@ app.use(lusca({
   csrf: true
 }));
 const corsOptions = {
-  origin: ['http://localhost:3000'],
+  origin: ['http://localhost:3000', 'http://localhost:3001'],
   method: 'GET,POST,PUT,DELETE',
-  allowedHeaders: 'Content-type,Authorization'
+  allowedHeaders: 'Content-type, Authorization'
 
 }
 
