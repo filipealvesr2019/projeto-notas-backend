@@ -140,73 +140,73 @@ app.post("/adicionar-produto", (req, res) => {
   }
 });
 
-app.post("/criar-usuario", async (req, res) => {
-  const { nome, email, senha, role } = req.body;
+// app.post("/criar-usuario", async (req, res) => {
+//   const { nome, email, senha, role } = req.body;
 
-  try {
-   // gera o salt
+//   try {
+//    // gera o salt
    
 
-    const senhaHash = await bcrypt.hash(senha, 10);
+//     const senhaHash = await bcrypt.hash(senha, 10);
 
-    const novoUsuario = new Usuario({
-      nome,
-      email,
-      senha: senhaHash,
-      role: role
-    });
+//     const novoUsuario = new Usuario({
+//       nome,
+//       email,
+//       senha: senhaHash,
+//       role: role
+//     });
 
-    await novoUsuario.save();
+//     await novoUsuario.save();
 
-    res.status(201).send({ message: "Usuario criado com sucesso!" });
-  } catch (error) {
-    console.log(error);
-  }
-});
+//     res.status(201).send({ message: "Usuario criado com sucesso!" });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 
-app.post(`/login`, async (req, res) => {
-  const {email, senha } = req.body;
+// app.post(`/login`, async (req, res) => {
+//   const {email, senha } = req.body;
 
-  try{
-    // procura o usuario no banco de dados
-    const usuario = await Usuario.findOne({email});
-    if(!usuario){
-      return res.status(404).json({error: "Usuario não encontrado!"})
-    }
+//   try{
+//     // procura o usuario no banco de dados
+//     const usuario = await Usuario.findOne({email});
+//     if(!usuario){
+//       return res.status(404).json({error: "Usuario não encontrado!"})
+//     }
     
-    // comparar com senhas
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
-    if(!senhaValida){
-      return res.status(401).json({error: "senha invalida"})
-    }
+//     // comparar com senhas
+//     const senhaValida = await bcrypt.compare(senha, usuario.senha);
+//     if(!senhaValida){
+//       return res.status(401).json({error: "senha invalida"})
+//     }
 
-    // cria token 
-    const token = jwt.sign({id: usuario._id, email: usuario.email, role: usuario.role}, SECRET, {expiresIn: '1h'})
-    res.json({message: "Login bem sucedido", token})
+//     // cria token 
+//     const token = jwt.sign({id: usuario._id, email: usuario.email, role: usuario.role}, SECRET, {expiresIn: '1h'})
+//     res.json({message: "Login bem sucedido", token})
 
-  }catch(error){
-    console.log(error)
-  }
+//   }catch(error){
+//     console.log(error)
+//   }
 
 
-})
+// })
 
-app.put('/usuarios/:id/role', autenticado, verficarPermissao(['admin']), async (req,  res) => {
-  const { id } = req.params;
-  const { role } = req.body;
+// app.put('/usuarios/:id/role', autenticado, verficarPermissao(['admin']), async (req,  res) => {
+//   const { id } = req.params;
+//   const { role } = req.body;
 
-  try{
+//   try{
 
-    const usuario = await Usuario.findByIdAndUpdate(id, { role },  {new: true});
-    if(!usuario){
-      res.status(404).json({error: "Usuario não encontrado"});
-    }
+//     const usuario = await Usuario.findByIdAndUpdate(id, { role },  {new: true});
+//     if(!usuario){
+//       res.status(404).json({error: "Usuario não encontrado"});
+//     }
 
-    res.json({ message: "Papel atualizado com sucesso!", usuario})
-  }catch(error){
-    console.log(error)
-  }
-})
+//     res.json({ message: "Papel atualizado com sucesso!", usuario})
+//   }catch(error){
+//     console.log(error)
+//   }
+// })
 
 // apenas admin podem acessar
 app.get('/admin', autenticado, verficarPermissao(['admin']), (req, res, next) => {
