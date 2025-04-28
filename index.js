@@ -26,21 +26,22 @@ app.use(session({
 app.use(lusca({
   csrf: true
 }));
-const corsOptions = {
-  origin: ['http://localhost:3000/', 'http://localhost:3001/'],
-  method: 'GET,POST,PUT,DELETE',
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-  
-}
 
-app.use(cors(corsOptions));
 
-// // Rota para pegar o token CSRF
-// app.get('/csrf-token', (req, res) => {
-//   res.json({ csrfToken: req.csrfToken() });
-// });
 
+
+
+// Rota para pegar o token CSRF
+app.get('/csrf-token', (req, res) => {
+  res.json({ csrfToken: req.csrfToken() });
+});
+
+app.use(cors({
+  origin: 'http://localhost:3001', // De onde aceita requisições
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'csrf-token'], // <<< Aqui adiciona o 'csrf-token'
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
 // const limiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutos
 //   max: 100,
@@ -229,9 +230,7 @@ app.use("/api", require('./routes/uploads'))
 // app.get("/mensagem", (req, res) => {
 //   res.send("essa e a sua mensagem de teste!")
 // })
-app.get('/csrf-token', (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-});
+
 app.use((req, res) => {
   res.status(404).send("Página não encontrada!");
 });
