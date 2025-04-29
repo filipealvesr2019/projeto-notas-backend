@@ -11,37 +11,31 @@ const cors = require('cors');
 const lusca = require('lusca');
 const session = require('express-session');
 const cookieParser = require("cookie-parser");
-
 app.use(cookieParser());
 
-// Configuração da sessão (OBRIGATÓRIA para `lusca`)
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'csrf-token'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
+
 app.use(session({
   secret: 'seuSegredoSuperSecreto',
   resave: false,
   saveUninitialized: true,
-  cookie: { secure: false } // Se estiver rodando HTTPS, mude para true
+  cookie: { secure: false } // true se for HTTPS
 }));
 
-// Middleware de segurança LUSCA (tem que vir depois da sessão!)
-app.use(lusca({
-  csrf: true
-}));
+app.use(lusca({ csrf: true }));
 
-
-
-
-
-// Rota para pegar o token CSRF
+// ✅ SÓ AGORA adicione a rota csrf
 app.get('/csrf-token', (req, res) => {
   res.json({ csrfToken: req.csrfToken() });
 });
 
-app.use(cors({
-  origin: 'http://localhost:3001', // De onde aceita requisições
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'csrf-token'], // <<< Aqui adiciona o 'csrf-token'
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-}));
+
+
 // const limiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutos
 //   max: 100,
