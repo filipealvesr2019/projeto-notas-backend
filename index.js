@@ -13,6 +13,8 @@ const session = require('express-session');
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
+
+
 app.use(cors({
   origin: 'http://localhost:3001',
   credentials: true,
@@ -35,7 +37,14 @@ app.get('/csrf-token', (req, res) => {
 });
 
 
-
+// Habilita o CSRF apenas em rotas que não são da API
+app.use((req, res, next) => {
+  // Só aplica CSRF em rotas que não começam com /api/public ou algo similar
+  if (req.path.startsWith('/api')) {
+    return next();
+  }
+  return lusca.csrf({ cookie: true })(req, res, next);
+});
 // const limiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutos
 //   max: 100,
