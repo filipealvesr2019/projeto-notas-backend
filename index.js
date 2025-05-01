@@ -29,22 +29,8 @@ app.use(session({
   cookie: { secure: false } // true se for HTTPS
 }));
 
-app.use(lusca({ csrf: true }));
-
-// ✅ SÓ AGORA adicione a rota csrf
-app.get('/csrf-token', (req, res) => {
-  res.json({ csrfToken: req.csrfToken() });
-});
 
 
-// Habilita o CSRF apenas em rotas que não são da API
-app.use((req, res, next) => {
-  // Só aplica CSRF em rotas que não começam com /api/public ou algo similar
-  if (req.path.startsWith('/api')) {
-    return next();
-  }
-  return lusca.csrf({ cookie: true })(req, res, next);
-});
 // const limiter = rateLimit({
 //   windowMs: 15 * 60 * 1000, // 15 minutos
 //   max: 100,
@@ -145,73 +131,25 @@ app.post("/adicionar-produto", (req, res) => {
   }
 });
 
-// app.post("/criar-usuario", async (req, res) => {
-//   const { nome, email, senha, role } = req.body;
 
-//   try {
-//    // gera o salt
-   
-
-//     const senhaHash = await bcrypt.hash(senha, 10);
-
-//     const novoUsuario = new Usuario({
-//       nome,
-//       email,
-//       senha: senhaHash,
-//       role: role
-//     });
-
-//     await novoUsuario.save();
-
-//     res.status(201).send({ message: "Usuario criado com sucesso!" });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// });
-
-// app.post(`/login`, async (req, res) => {
-//   const {email, senha } = req.body;
-
-//   try{
-//     // procura o usuario no banco de dados
-//     const usuario = await Usuario.findOne({email});
-//     if(!usuario){
-//       return res.status(404).json({error: "Usuario não encontrado!"})
-//     }
-    
-//     // comparar com senhas
-//     const senhaValida = await bcrypt.compare(senha, usuario.senha);
-//     if(!senhaValida){
-//       return res.status(401).json({error: "senha invalida"})
-//     }
-
-//     // cria token 
-//     const token = jwt.sign({id: usuario._id, email: usuario.email, role: usuario.role}, SECRET, {expiresIn: '1h'})
-//     res.json({message: "Login bem sucedido", token})
-
-//   }catch(error){
-//     console.log(error)
-//   }
+app.use((req, res, next) => {
+  if (req.path === '/csrf-token') {
+    // Aplica CSRF para essa rota específica
+    lusca.csrf()(req, res, next);
+  } else if (!req.path.startsWith('/api')) {
+    // Aplica CSRF para rotas normais
+    lusca.csrf()(req, res, next);
+  } else {
+    // Ignora para rotas /api
+    next();
+  }
+});
 
 
-// })
-
-// app.put('/usuarios/:id/role', autenticado, verficarPermissao(['admin']), async (req,  res) => {
-//   const { id } = req.params;
-//   const { role } = req.body;
-
-//   try{
-
-//     const usuario = await Usuario.findByIdAndUpdate(id, { role },  {new: true});
-//     if(!usuario){
-//       res.status(404).json({error: "Usuario não encontrado"});
-//     }
-
-//     res.json({ message: "Papel atualizado com sucesso!", usuario})
-//   }catch(error){
-//     console.log(error)
-//   }
-// })
+app.get('/csrf-token', (req, res) => {
+  const token = req.csrfToken();
+  res.json({ csrfToken: token });
+});
 
 // apenas admin podem acessar
 app.get('/admin', autenticado, verficarPermissao(['admin']), (req, res, next) => {
@@ -224,19 +162,16 @@ app.get('/perfil', autenticado, verficarPermissao(['user', 'admin']), (req, res)
 })
 
 
-app.use("/api/users", require('./routes/Users'));
+app.use("/api/users",  require('./routes/Users'));
 app.use("/api/notas", require('./routes/Notas'));
 app.use("/api", require('./routes/uploads'))
-// app.use(lusca.csrf());
-
-// app.use(limiter)
-// app.get("/mensagem", (req, res) => {
-//   res.send("essa e a sua mensagem de teste!")
-// })
 
 app.use((req, res) => {
   res.status(404).send("Página não encontrada!");
 });
+
+// Aplica CSRF globalmente, mas só para rotas não-API
+
 const uri = process.env.MONGODB_URI;
 
 if (!uri) {

@@ -11,7 +11,7 @@ const tokenSecret =  process.env.JWT_SECRET
 // rota de registro de usuario
 router.post(
   "/register",
-    // lusca.csrf(),
+    lusca.csrf(),
     rateLimitMiddleware,
   [
     body("nome").trim().escape(),
