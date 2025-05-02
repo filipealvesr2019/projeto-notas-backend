@@ -144,7 +144,10 @@ app.use((req, res, next) => {
     next();
   }
 });
-
+// Lusca CSRF Middleware global
+app.use(lusca.csrf());
+app.use(lusca.xframe('SAMEORIGIN'));
+app.use(lusca.xssProtection(true));
 
 app.get('/csrf-token', (req, res) => {
   const token = req.csrfToken();
